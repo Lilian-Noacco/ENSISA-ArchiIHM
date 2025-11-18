@@ -1,10 +1,9 @@
 package ensisa.birds.model;
 
-import java.io.InputStream;
+import java.io.*;
 
 import com.fasterxml.jackson.databind.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 
 public class BirdRepository {
     public ObservableList<Bird> birds;
@@ -16,6 +15,9 @@ public class BirdRepository {
     public void load() {
         try (InputStream inputStream = getClass().
                 getResourceAsStream("/ensisa/birds/assets/Birds.json")) {
+            if (inputStream == null) {
+                throw new RuntimeException("Birds.json not found");
+            }
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(
                     DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

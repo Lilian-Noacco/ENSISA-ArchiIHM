@@ -1,7 +1,11 @@
 package ensisa.birds.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.image.Image;
 
 public class Bird {
     private StringProperty family = new SimpleStringProperty(this, "family", "");
@@ -11,6 +15,25 @@ public class Bird {
     private StringProperty latinName = new SimpleStringProperty(this, "latinName", "");
     private StringProperty description = new SimpleStringProperty(this, "description", "");
     private StringProperty imagePath = new SimpleStringProperty(this, "imagePath", "");
+
+    @JsonIgnore
+    private Property<Image> image = new SimpleObjectProperty<>(this, "image");
+
+    public Bird() {
+        imagePath.addListener((v, oldValue, newValue) -> {
+            if (newValue == null || newValue.isEmpty()) {
+                setImage(null);
+                return;
+            }
+            var url = getClass()
+                    .getResource("/ensisa/birds/assets/images/" + newValue);
+            if (url != null) {
+                setImage(new Image(url.toExternalForm()));
+            } else {
+                setImage(null);
+            }
+        });
+    }
 
     public String getFamily() {
         return family.get();
@@ -23,7 +46,6 @@ public class Bird {
     public void setFamily(String family) {
         this.family.set(family);
     }
-
 
     public String getGenus() {
         return genus.get();
@@ -97,5 +119,15 @@ public class Bird {
         this.imagePath.set(imagePath);
     }
 
+    public Image getImage() {
+        return image.getValue();
+    }
 
+    public Property<Image> imageProperty() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image.setValue(image);
+    }
 }
